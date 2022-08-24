@@ -25,6 +25,7 @@ async function generateFiles(repoRoot, subdir) {
   for (const version of versions) {
     const schemas = await fsPromises.readdir(`${repoRoot}/.schemas/schemas/${subdir}/${version}`);
     for (const schema of schemas) {
+      if (schema === 'empty.json' && subdir === 'core') continue // skip empty, quicktype generates bad code for this
       const schemaPath = `${repoRoot}/.schemas/schemas/${subdir}/${version}/${schema}`;
       const jsonSchemaString = await fsPromises.readFile(schemaPath, {encoding: 'utf8'});
       const filename = path.basename(schemaPath);
