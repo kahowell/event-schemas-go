@@ -21,12 +21,12 @@ class StaticJSONSchemaStore extends JSONSchemaStore {
 }
 
 async function generateFiles(repoRoot, subdir) {
-  const versions = await fsPromises.readdir(`${repoRoot}/.schemas/schemas/${subdir}`);
+  const versions = await fsPromises.readdir(`${repoRoot}/api/schemas/${subdir}`);
   for (const version of versions) {
-    const schemas = await fsPromises.readdir(`${repoRoot}/.schemas/schemas/${subdir}/${version}`);
+    const schemas = await fsPromises.readdir(`${repoRoot}/api/schemas/${subdir}/${version}`);
     for (const schema of schemas) {
       if (schema === 'empty.json' && subdir === 'core') continue // skip empty, quicktype generates bad code for this
-      const schemaPath = `${repoRoot}/.schemas/schemas/${subdir}/${version}/${schema}`;
+      const schemaPath = `${repoRoot}/api/schemas/${subdir}/${version}/${schema}`;
       const jsonSchemaString = await fsPromises.readFile(schemaPath, {encoding: 'utf8'});
       const filename = path.basename(schemaPath);
       const schemaInput = new JSONSchemaInput(new StaticJSONSchemaStore());
@@ -60,17 +60,9 @@ async function generateGoFiles(subdir, version, inputData, schema) {
 }
 
 async function main() {
-  if (!fs.existsSync('.schemas')) {
-    await execSync('git clone https://github.com/RedHatInsights/event-schemas .schemas');
-  }
-  chdir('.schemas');
-  console.info('Ensuring event-schemas checkout up-to-date');
-  await execSync('git pull --ff-only');
-  chdir('..')
-
   console.info('Generating go source files');
   const repoRoot = execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
-  const apps = await fsPromises.readdir(`${repoRoot}/.schemas/schemas/apps/`);
+  const apps = await fsPromises.readdir(`${repoRoot}/api/schemas/apps/`);
   await generateFiles(repoRoot, 'core');
   for (const app of apps) {
     await generateFiles(repoRoot, `apps/${app}`);
