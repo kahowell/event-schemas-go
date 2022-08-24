@@ -60,8 +60,12 @@ async function generateGoFiles(subdir, version, inputData, schema) {
 }
 
 async function main() {
-  console.info('Generating go source files');
   const repoRoot = execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
+  console.info('Clearing out existing source files')
+  for (const path of ['apps', 'core']) {
+    fs.rmSync(`${repoRoot}/${path}`, {recursive: true, force: true});
+  }
+  console.info('Generating go source files');
   const apps = await fsPromises.readdir(`${repoRoot}/api/schemas/apps/`);
   await generateFiles(repoRoot, 'core');
   for (const app of apps) {
