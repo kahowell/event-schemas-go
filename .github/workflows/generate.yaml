@@ -17,7 +17,9 @@ jobs:
       - run: npm ci
       - run: npm run generate
       - run: |
-          git add .
-          git config --global user.name ${{ github.actor }}
-          git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-          git commit -a -m 'Regenerate types' && git push
+          if [ -n "$(git status --porcelain)"]; then
+            git add .
+            git config --global user.name ${{ github.actor }}
+            git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+            git commit -a -m 'Regenerate types' && git push
+          fi
