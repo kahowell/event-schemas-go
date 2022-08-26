@@ -17,7 +17,7 @@ jobs:
       - run: npm ci
       - run: npm run generate
       - run: |
-          if [ -n "$(git status --porcelain)"]; then
+          if [ -n "$(git status --porcelain)" ]; then
             git add .
             git config --global user.name ${{ github.actor }}
             git config --global user.email '${{ github.actor }}@users.noreply.github.com'
